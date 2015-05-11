@@ -58,9 +58,16 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "accel.h"
 #include "i2c_display.h"
 
+
+
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: Global Data Definitions
+
+#define BUFFER_SIZE 64
+
+void load_from_buffer(char *bufer, char *str);
 // *****************************************************************************
 // *****************************************************************************
 
@@ -390,6 +397,29 @@ void APP_Tasks (void )
                         }
                         break;
 
+                    case 0x01:
+
+                        /* Toggle on board LED1*/
+                        BSP_LEDToggle( APP_USB_LED_1 );
+
+                        appData.hidDataReceived = false;
+
+                        /* Write on the diplay */
+                        {
+                            char display_str[60];
+
+                            load_from_buffer(appData.receiveDataBuffer, display_str);
+
+                            display_clear();
+                            display_write_string(display_str, 5, 5);
+                            display_draw();
+                        }
+                        /* Place a new read request. */
+                        USB_DEVICE_HID_ReportReceive (USB_DEVICE_HID_INDEX_0,
+                                &appData.rxTransferHandle, appData.receiveDataBuffer, 64 );
+
+                        break;
+
                     default:
 
                         appData.hidDataReceived = false;
@@ -406,7 +436,69 @@ void APP_Tasks (void )
             break;
     }
 }
- 
+
+
+void load_from_buffer(char *buffer, char *str)
+{
+    int i = 1;
+    while(buffer[i] != 0)
+    {
+        str[i-1] = buffer[i];
+        i++;
+    }
+    str[i-1] = '\0';
+
+    /*int j,c=0;
+
+    for(j=0;j<i;j++)
+    {
+        BSP_LEDToggle( APP_USB_LED_2 );
+        while(c<1000000)
+            c++;
+        c = 0;
+
+        BSP_LEDToggle( APP_USB_LED_2 );
+        while(c<1000000)
+            c++;
+        c = 0;
+    }
+
+    if(str[0] == 't')
+        BSP_LEDToggle( APP_USB_LED_1 );
+    while(c<10000000)
+        c++;
+    c = 0;
+
+    if(str[1] == 'e')
+        BSP_LEDToggle( APP_USB_LED_1 );
+    while(c<10000000)
+        c++;
+    c = 0;
+    
+    if(str[2] == 's')
+        BSP_LEDToggle( APP_USB_LED_1 );
+    while(c<10000000)
+        c++;
+    c = 0;
+    
+    if(str[3] == 't')
+        BSP_LEDToggle( APP_USB_LED_1 );
+    while(c<10000000)
+        c++;
+    c = 0;
+    
+    if(str[4] == 'e')
+        BSP_LEDToggle( APP_USB_LED_1 );
+    while(c<10000000)
+        c++;
+    c = 0;
+    if(str[4] == '\0')
+        BSP_LEDToggle( APP_USB_LED_1 );
+    while(c<10000000)
+        c++;
+    c = 0;*/
+    
+}
 
 /*******************************************************************************
  End of File
