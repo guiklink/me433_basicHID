@@ -66,6 +66,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 // Section: Global Data Definitions
 
 #define BUFFER_SIZE 64
+#define DATA_SEPARATOR '#'
 
 void load_from_buffer(char *bufer, char *str);
 // *****************************************************************************
@@ -443,7 +444,7 @@ void APP_Tasks (void )
 void load_from_buffer(char *buffer, char *str)
 {
     int i = 0;
-    while(buffer[i] != 0)
+    while(buffer[i] != DATA_SEPARATOR && buffer[i] != 0)
     {
         str[i] = buffer[i];
         i++;
