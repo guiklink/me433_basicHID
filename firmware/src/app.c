@@ -417,8 +417,8 @@ void APP_Tasks (void )
                             row_number = atoi(row_number_str);
 
                             display_clear();
-                            display_write_string(display_str, 5, 5);
-                            display_write_string(row_number_str, 25, 5);
+                            display_write_string(display_str, row_number, 5);
+                            //display_write_string(row_number_str, 25, 5);
                             display_draw();
                         }
                         /* Place a new read request. */
