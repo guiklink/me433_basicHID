@@ -57,7 +57,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "app.h"
 #include "accel.h"
 #include "i2c_display.h"
-
+#include "string.h"
 
 
 
@@ -406,9 +406,11 @@ void APP_Tasks (void )
 
                         /* Write on the diplay */
                         {
-                            char display_str[60];
+                            char display_str[BUFFER_SIZE], tmp_buf[BUFFER_SIZE];
 
-                            load_from_buffer(appData.receiveDataBuffer, display_str);
+                            strcpy(tmp_buf, &appData.receiveDataBuffer[1]);
+
+                            load_from_buffer(tmp_buf, display_str);
 
                             display_clear();
                             display_write_string(display_str, 5, 5);
@@ -440,13 +442,13 @@ void APP_Tasks (void )
 
 void load_from_buffer(char *buffer, char *str)
 {
-    int i = 1;
+    int i = 0;
     while(buffer[i] != 0)
     {
-        str[i-1] = buffer[i];
+        str[i] = buffer[i];
         i++;
     }
-    str[i-1] = '\0';
+    str[i] = '\0';
 
     /*int j,c=0;
 
