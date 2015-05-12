@@ -407,14 +407,18 @@ void APP_Tasks (void )
 
                         /* Write on the diplay */
                         {
-                            char display_str[BUFFER_SIZE], tmp_buf[BUFFER_SIZE];
+                            char display_str[BUFFER_SIZE], tmp_buf[BUFFER_SIZE],row_number_str[BUFFER_SIZE];
+                            int row_number;
 
                             strcpy(tmp_buf, &appData.receiveDataBuffer[1]);
 
                             load_from_buffer(tmp_buf, display_str);
+                            load_from_buffer(tmp_buf, row_number_str);
+                            row_number = atoi(row_number_str);
 
                             display_clear();
                             display_write_string(display_str, 5, 5);
+                            display_write_string(row_number_str, 25, 5);
                             display_draw();
                         }
                         /* Place a new read request. */
@@ -444,12 +448,19 @@ void APP_Tasks (void )
 void load_from_buffer(char *buffer, char *str)
 {
     int i = 0;
+    char tmp_str[BUFFER_SIZE];
     while(buffer[i] != DATA_SEPARATOR && buffer[i] != 0)
     {
         str[i] = buffer[i];
         i++;
     }
     str[i] = '\0';
+
+    if(buffer[i] == DATA_SEPARATOR)
+    {
+        strcpy(tmp_str, &buffer[i+1]);
+        strcpy(buffer, tmp_str);
+    }
 
     /*int j,c=0;
 
