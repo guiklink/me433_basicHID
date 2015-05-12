@@ -436,7 +436,8 @@ void APP_Tasks (void )
 
                         if(appData.hidDataTransmitted)
                         {
-                            int i;
+                            _CP0_SET_COUNT(0);
+                            while (_CP0_GET_COUNT() < 200000);
                             // Fil buffer to accel data
 
                             short accels[3]; // accelerations for the 3 axes
@@ -446,7 +447,7 @@ void APP_Tasks (void )
 
                             appData.transmitDataBuffer[0] = 0x02;
 
-                            sprintf(&appData.transmitDataBuffer[1],"%2d%2d%2d", accels[0]*ACCEL_SCALE,accels[1]*ACCEL_SCALE,accels[2]*ACCEL_SCALE);
+                            sprintf(&appData.transmitDataBuffer[1],"%2d,%2d,%2d", accels[0]*ACCEL_SCALE,accels[1]*ACCEL_SCALE,accels[2]*ACCEL_SCALE);
 
                             /*appData.transmitDataBuffer[0] = 0x81;
 
