@@ -67,8 +67,11 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 
 #define BUFFER_SIZE 64
 #define DATA_SEPARATOR '#'
+#define ACCEL_SCALE 3/3200
 
 void load_from_buffer(char *bufer, char *str);
+void load_accel_data_on_buffer(char *str, unsigned char *buffer);
+void clear_buffer(unsigned char *buffer);
 // *****************************************************************************
 // *****************************************************************************
 
@@ -398,6 +401,7 @@ void APP_Tasks (void )
                         }
                         break;
 
+                    // Write Message on Screen
                     case 0x01:
 
                         /* Toggle on board LED1*/
@@ -426,6 +430,49 @@ void APP_Tasks (void )
                                 &appData.rxTransferHandle, appData.receiveDataBuffer, 64 );
 
                         break;
+                        
+                    // Send accel data to computer
+                    case 0x02:
+
+                        if(appData.hidDataTransmitted)
+                        {
+                            int i;
+                            // Fil buffer to accel data
+
+                            short accels[3]; // accelerations for the 3 axes
+                            acc_read_register(OUT_X_L_A, (unsigned char *) accels, 6);
+
+                            clear_buffer(appData.transmitDataBuffer);
+
+                            appData.transmitDataBuffer[0] = 0x02;
+
+                            sprintf(&appData.transmitDataBuffer[1],"%2d%2d%2d", accels[0]*ACCEL_SCALE,accels[1]*ACCEL_SCALE,accels[2]*ACCEL_SCALE);
+
+                            /*appData.transmitDataBuffer[0] = 0x81;
+
+                            if( BSP_SwitchStateGet(APP_USB_SWITCH_1) == BSP_SWITCH_STATE_PRESSED )
+                            {
+                                appData.transmitDataBuffer[1] = 0x00;
+                            }
+                            else
+                            {
+                                appData.transmitDataBuffer[1] = 0x01;
+                            }*/
+
+                            appData.hidDataTransmitted = false;
+
+                            /* Prepare the USB module to send the data packet to the host */
+                            USB_DEVICE_HID_ReportSend (USB_DEVICE_HID_INDEX_0,
+                                    &appData.txTransferHandle, appData.transmitDataBuffer, 64 );
+
+                            appData.hidDataReceived = false;
+
+                            /* Place a new read request. */
+                            USB_DEVICE_HID_ReportReceive (USB_DEVICE_HID_INDEX_0,
+                                    &appData.rxTransferHandle, appData.receiveDataBuffer, 64 );
+                        }
+                        break;
+
 
                     default:
 
@@ -460,58 +507,30 @@ void load_from_buffer(char *buffer, char *str)
     {
         strcpy(tmp_str, &buffer[i+1]);
         strcpy(buffer, tmp_str);
-    }
+    }    
+}
 
-    /*int j,c=0;
+void load_accel_data_on_buffer(char *str, unsigned char *buffer)
+{
+    int i, start = 1;
 
-    for(j=0;j<i;j++)
+    while(buffer[start] != '\0')
+        start++;
+
+    for(i = 0; i < 6; i++)
     {
-        BSP_LEDToggle( APP_USB_LED_2 );
-        while(c<1000000)
-            c++;
-        c = 0;
-
-        BSP_LEDToggle( APP_USB_LED_2 );
-        while(c<1000000)
-            c++;
-        c = 0;
+        buffer[i+start] = str[i];
     }
+}
 
-    if(str[0] == 't')
-        BSP_LEDToggle( APP_USB_LED_1 );
-    while(c<10000000)
-        c++;
-    c = 0;
+void clear_buffer(unsigned char *buffer)
+{
+	int i;
 
-    if(str[1] == 'e')
-        BSP_LEDToggle( APP_USB_LED_1 );
-    while(c<10000000)
-        c++;
-    c = 0;
-    
-    if(str[2] == 's')
-        BSP_LEDToggle( APP_USB_LED_1 );
-    while(c<10000000)
-        c++;
-    c = 0;
-    
-    if(str[3] == 't')
-        BSP_LEDToggle( APP_USB_LED_1 );
-    while(c<10000000)
-        c++;
-    c = 0;
-    
-    if(str[4] == 'e')
-        BSP_LEDToggle( APP_USB_LED_1 );
-    while(c<10000000)
-        c++;
-    c = 0;
-    if(str[4] == '\0')
-        BSP_LEDToggle( APP_USB_LED_1 );
-    while(c<10000000)
-        c++;
-    c = 0;*/
-    
+	for (i = 0; i < 64; ++i)
+	{
+		buffer[i] = '\0';
+	}
 }
 
 /*******************************************************************************
