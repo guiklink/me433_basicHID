@@ -1,4 +1,4 @@
-load accel_data_1Hz_1000samps.txt
+load accels.txt
 z_raw = transpose(accel_data_1Hz_1000samps(1:end,1));%raw unflitered z_accel data
 z_MAF = transpose(accel_data_1Hz_1000samps(1:end,2));%pre-processing filter MAF filter implemented on PIC
 
