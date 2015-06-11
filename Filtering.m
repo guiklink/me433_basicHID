@@ -1,11 +1,11 @@
-load accels.txt
-z_raw = transpose(accel_data_1Hz_1000samps(1:end,1));%raw unflitered z_accel data
-z_MAF = transpose(accel_data_1Hz_1000samps(1:end,2));%pre-processing filter MAF filter implemented on PIC
+load accelsZ.txt
+%z_raw = transpose(accel_data_1Hz_1000samps(1:end,1));%raw unflitered z_accel data
+%z_MAF = transpose(accel_data_1Hz_1000samps(1:end,2));%pre-processing filter MAF filter implemented on PIC
 
 %####################Post-processing filter design MAF and FIR######
-b=fir1(10,0.15);
-freqz(b);%Plot the frequency response of the fir filter
-z_fir=conv(b,z_raw);%Convolution of the raw data and the filter (post-processing)
+%b=fir1(10,0.15);
+%freqz(b);%Plot the frequency response of the fir filter
+%z_fir=conv(b,z_raw);%Convolution of the raw data and the filter (post-processing)
 
 %#####################plot the z signals############################
 % f=figure();
