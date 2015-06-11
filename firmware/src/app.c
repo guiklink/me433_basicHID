@@ -447,7 +447,7 @@ void APP_Tasks (void )
 
                             appData.transmitDataBuffer[0] = 0x02;
 
-                            sprintf(&appData.transmitDataBuffer[1],"%2d,%2d,%2d", accels[0]*ACCEL_SCALE,accels[1]*ACCEL_SCALE,accels[2]*ACCEL_SCALE);
+                            sprintf(&appData.transmitDataBuffer[1],"%2d", accels[2]);
 
                             /*appData.transmitDataBuffer[0] = 0x81;
 
